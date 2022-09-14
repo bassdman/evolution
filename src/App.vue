@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <MatchField :width="30" :height="20" :nrGood="10" :nrEvil="10"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MatchField from './components/MatchField.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MatchField
   }
 }
 </script>
