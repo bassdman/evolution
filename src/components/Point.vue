@@ -1,10 +1,11 @@
 <template>
-  <div
+  
+  <div class="pointWrapper"><div
     class="point"
     :title="title"
     v-bind:class="{ ['point' + point.type]: true, selected: point.isSelected}"
     v-on:click="toggleSelected"
-  ></div>
+  ></div></div>
 </template>
 
 <script>
@@ -35,7 +36,7 @@ weight: ${this.point.weight}`;
   width: 5px;
   height: 5px;
   border-radius: 10px;
-  background: gray;
+/*  background: gray;*/
   margin: 10px;
   cursor: pointer;
   display: inline-block;
@@ -47,12 +48,14 @@ weight: ${this.point.weight}`;
   margin: 8px;
 }
 
-.pointstart{
-  background: white;
+.pointWrapper{
+  background: lightgreen;
+  border: 1px solid lightgray;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
-.pointdestination {
-  background: black;
-}
+
 .pointgood{
   background:green;
   width: 9px;

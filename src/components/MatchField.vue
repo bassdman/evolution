@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrapper" :style="{ width: 25 * width + 'px' }">
+    <div class="wrapper" :style="{ '--width':width,width: 25 * width + 'px' }">
       <Point v-for="y in points" v-bind:key="y" :point="y" v-on:pointSelected="onPointSelected"></Point>
     </div>
     <div class="panel">
@@ -123,8 +123,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .wrapper {
-  width: 500px;
-  background: lightgreen;
+  display:grid;
+  grid-template-columns: repeat(var(--width),1fr);
   margin: auto;
 }
 </style>
