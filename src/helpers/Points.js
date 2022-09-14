@@ -1,25 +1,3 @@
-import { getRandomNumbers } from '../helpers/random';
-
-function getPoint(point, config) {
-    const _neighbours = neighbours(point.index, parseInt(config.width), parseInt(config.height)).split(",");
-    const type = getType(point);
-    return {
-        nr: point.index,
-        isSelected: false,
-        neighbours: _neighbours,
-        type,
-        weight: 10,
-    };
-}
-
-function getType(point) {
-    if (point.isGood) return "good";
-
-    if (point.isEvil) return "evil";
-
-    return "default";
-}
-
 function neighbours(point, totalWidth, totalHeigth) {
     const nextX = parseInt(point) + 1;
     const previousX = parseInt(point) - 1;
@@ -43,17 +21,21 @@ function neighbours(point, totalWidth, totalHeigth) {
 function initPoints(config) {
     const nrOfPoints = (config.width || 10) * (config.height || 10);
 
-    const positionsGood = getRandomNumbers(config.nrGood, 0, nrOfPoints);
-    const positionsEvil = getRandomNumbers(config.nrEvil, 0, nrOfPoints, positionsGood);
+    const placePeopleOnMap = config.strategiesStore.get('pointType');
+    const locationOfPeople = placePeopleOnMap.run(config, nrOfPoints);
 
     let points = [];
     for (let i = 1; i <= nrOfPoints; i++) {
-        const pointConfig = {
-            index: i,
-            isGood: positionsGood.includes(i),
-            isEvil: positionsEvil.includes(i)
-        }
-        const point = getPoint(pointConfig, config);
+        const type = locationOfPeople[i] || 'default';
+        const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
+
+        const point = {
+            nr: i,
+            isSelected: false,
+            neighbours: _neighbours,
+            type: type,
+            weight: 10,
+        };
         points.push(point);
     }
 

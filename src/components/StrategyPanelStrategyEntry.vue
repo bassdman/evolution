@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import strategiesStore from '../strategies/strategies';
+import {useStrategies } from '../strategies/strategies';
 
 export default {
   name: "StrategyPanelStrategyEntrys",
@@ -17,18 +17,18 @@ export default {
     name: String,
     description: String,
   },
-  setup(props){
-      const val = strategiesStore.getters.getDefaultOption(props.name);
+  setup(){
+     /* const val = strategiesStore.getDefaultOption(props.name);
 
       strategiesStore.commit('setStrategy',{name:props.name,value: val});
       return {
           val,
-          options: strategiesStore.getters.getAllOptions(props.name)
-      }
+          options: strategiesStore.getAllOptions(props.name)
+      }*/
   },
   methods: {
    change(e){
-       strategiesStore.commit('setStrategy',{name:this.name,value: e.target.value});
+       useStrategies.setStrategy({name:this.name,value: e.target.value});
    }
   },
 };

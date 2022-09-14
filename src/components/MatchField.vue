@@ -29,7 +29,7 @@ import { nextPoint } from "../helpers/MoveNext";
 import { initPoints } from "../helpers/Points";
 import StrategyPanel from "./StrategiesPanel.vue";
 import { config } from "../../evolution.config";
-import strategiesStore from '../strategies/strategies';
+import { useStrategies }  from '../strategies/strategies';
 
 function reset() {
   this.currentPosition = this.start;
@@ -39,7 +39,7 @@ function reset() {
 }
 
 function nextStep(ctx) {
-  const _nextPoint = nextPoint(ctx.currentPosition, ctx.points, strategiesStore);
+  const _nextPoint = nextPoint(ctx.currentPosition, ctx.points, ctx.strategiesStore);
 
   if (!_nextPoint) {
     ctx.log.push({ steps: ctx.steps, success: false });
@@ -65,13 +65,15 @@ export default {
     nrEvil: Number
   },
   setup(props) {
+    const strategiesStore = useStrategies();
 
 
     const points = initPoints({
       width: props.width || 20,
       height: props.height || 20,
       nrGood: props.nrGood,
-      nrEvil: props.nrEvil
+      nrEvil: props.nrEvil,
+      strategiesStore 
     });
 
     return {
@@ -83,6 +85,7 @@ export default {
       reset,
       log: [],
       config,
+      strategiesStore,
       strategies: ref({}),
     };
   },
