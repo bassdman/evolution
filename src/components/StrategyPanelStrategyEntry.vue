@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {useStrategies } from '../strategies/strategies';
+import {useStrategies } from '../stores/strategyStore';
 
 export default {
   name: "StrategyPanelStrategyEntrys",

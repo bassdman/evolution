@@ -1,63 +1,71 @@
 <template>
   <div>
     <div class="wrapper" :style="{ '--width':width,width: 25 * width + 'px' }">
-      <Point v-for="y in points" v-bind:key="y" :point="y" v-on:pointSelected="onPointSelected"></Point>
+      <div class="groundWrapper" v-for="p in grounds" v-bind:key="p" v-on:groundSelected="ongroundSelected">
+       <div class="ground" v-bind:class="{ ['ground' + p.type]: true, selected: p.isSelected}"
+          v-on:click="toggleSelected" :data-nurient-a="p.nurients.A.nr" :data-nurient-b="p.nurients.B.nr"
+          :data-nurient-c="p.nurients.C.nr" :data-nurient-d="p.nurients.D.nr"
+          :data-nurient-e="p.nurients.E.nr" :data-nurient-f="p.nurients.F.nr"
+          :data-nurient-g="p.nurients.G.nr" :data-nurient-h="p.nurients.H.nr"
+          :data-nurient-i="p.nurients.I.nr"></div>
+      </div>
     </div>
-    <div class="panel">
-      <button v-on:click="nextStep">Next Step ></button><button v-on:click="oneRun">One Run >>></button>
-    </div>
-    <div>
-      Current: steps: {{ steps }}; succeeded: {{ succeeded }},
-      minSuccessfullSteps:
-      {{ minSuccessfullSteps == -1 ? "---" : minSuccessfullSteps }}<br />
-      History:
-      <ul>
-        <li v-for="item in log" v-bind:key="item">
-          <span v-bind:style="{ color: item.success ? 'green' : 'red' }">{{ item.steps }}x</span>
-        </li>
-      </ul>
-    </div>
-    <StrategyPanel v-bind:config="config" @updatestrategies="updateStrategies">
-    </StrategyPanel>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import Point from "./Point";
-import { nextPoint } from "../helpers/MoveNext";
-import { initPoints } from "../helpers/Points";
-import StrategyPanel from "./StrategiesPanel.vue";
-import { config } from "../../evolution.config";
-import { useStrategies }  from '../strategies/strategies';
+import { useStrategies } from '../stores/strategyStore';
+import { useNurients } from '../stores/nurientStore';
 
-function reset() {
-  this.currentPosition = this.start;
-  this.steps = 0;
-  this.succeeded = false;
-  this.failed = false;
+function neighbours(ground, totalWidth, totalHeigth) {
+  const nextX = parseInt(ground) + 1;
+  const previousX = parseInt(ground) - 1;
+  const nextY = parseInt(ground) + totalHeigth;
+  const previousY = parseInt(ground) - totalHeigth;
+
+  const neighbours = [];
+
+  if (nextX % totalWidth !== 1) neighbours.push(nextX);
+
+  if (previousX % totalWidth > 0) neighbours.push(previousX);
+
+  if (parseInt(nextY / totalHeigth) < totalHeigth) neighbours.push(nextY);
+
+  if (previousY > 0 && parseInt(previousY / totalHeigth) >= 0)
+    neighbours.push(previousY);
+
+  return neighbours.toString();
 }
 
-function nextStep(ctx) {
-  const _nextPoint = nextPoint(ctx.currentPosition, ctx.points, ctx.strategiesStore);
+function initgrounds(config) {
+  const nrOfgrounds = (config.width || 10) * (config.height || 10);
 
-  if (!_nextPoint) {
-    ctx.log.push({ steps: ctx.steps, success: false });
-    ctx.failed = true;
-    return;
+  const placePeopleOnMap = config.strategiesStore.get('groundType');
+  const locationOfPeople = placePeopleOnMap.run(config, nrOfgrounds);
+
+  let grounds = [];
+  for (let i = 1; i <= nrOfgrounds; i++) {
+    const type = locationOfPeople[i] || 'default';
+    const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
+    const nurients = config.nurientStore.getInitialNrOfNurientsForTile();
+
+    const ground = {
+      nr: i,
+      isSelected: false,
+      neighbours: _neighbours,
+      type: type,
+      weight: 10,
+      nurients
+    };
+    grounds.push(ground);
   }
 
-  ctx.currentPosition = _nextPoint.nr;
-  _nextPoint.visited = true;
-  ctx.steps++;
+  return grounds;
 }
 
 export default {
-  name: "evolution-brain",
-  components: {
-    Point,
-    StrategyPanel,
-  },
+  name: "evo-sim",
   props: {
     width: Number,
     height: Number,
@@ -66,27 +74,22 @@ export default {
   },
   setup(props) {
     const strategiesStore = useStrategies();
+    const nurientStore = useNurients();
 
 
-    const points = initPoints({
+    const grounds = initgrounds({
       width: props.width || 20,
       height: props.height || 20,
       nrGood: props.nrGood,
       nrEvil: props.nrEvil,
-      strategiesStore 
+      strategiesStore,
+      nurientStore
     });
 
     return {
       selected: ref(0),
-      points: ref(points),
-      succeeded: false,
+      grounds: ref(grounds),
       steps: ref(0),
-      minSuccessfullSteps: -1,
-      reset,
-      log: [],
-      config,
-      strategiesStore,
-      strategies: ref({}),
     };
   },
   methods: {
@@ -94,28 +97,17 @@ export default {
       console.log('updatestrategies', ctx)
       this.strategies = ctx.strategies;
     },
-    getPoint(nr) {
-      return this.points[nr];
+    getground(nr) {
+      return this.grounds[nr];
     },
-    onPointSelected(value) {
-      this.points.forEach((point) => {
-        if (point.nr == value.nr) point.isSelected = value.value;
-        else point.isSelected = false;
+    ongroundSelected(value) {
+      this.grounds.forEach((ground) => {
+        if (ground.nr == value.nr) ground.isSelected = value.value;
+        else ground.isSelected = false;
       });
 
       this.selected = value.nr;
-    },
-    nextStep() {
-      nextStep(this);
-      if (this.succeeded || this.failed) this.reset();
-    },
-    oneRun() {
-      if (this.succeeded || this.failed) this.reset();
-
-      while (!this.succeeded && !this.failed) {
-        nextStep(this);
-      }
-    },
+    }
   },
 };
 </script>
@@ -123,8 +115,44 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .wrapper {
-  display:grid;
-  grid-template-columns: repeat(var(--width),1fr);
+  display: grid;
+  grid-template-columns: repeat(var(--width), 1fr);
   margin: auto;
+}
+.ground {
+  width: 5px;
+  height: 5px;
+  border-radius: 10px;
+/*  background: gray;*/
+  margin: 10px;
+  cursor: grounder;
+  display: inline-block;
+}
+
+.selected {
+  width: 9px;
+  height: 9px;
+  margin: 8px;
+}
+
+.groundWrapper{
+  background: lightgreen;
+  border: 1px solid lightgray;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.groundgood{
+  background:green;
+  width: 9px;
+  height: 9px;
+  margin: 8px;
+}
+.groundevil{
+  background:red;
+  width: 9px;
+  height: 9px;
+  margin: 8px;
 }
 </style>

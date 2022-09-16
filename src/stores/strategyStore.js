@@ -6,7 +6,7 @@ import { defineStore } from 'pinia';
 export const useStrategies = defineStore('strategies', {
     state: () => ({
         filterNeighbours: '',
-        pointType: ''
+        groundType: ''
     }),
     getters: {
         getDefaultOption() {
@@ -42,10 +42,11 @@ export const useStrategies = defineStore('strategies', {
             }
 
         },
-        actions: {
-            setStrategy: function(name, fn) {
-                this[name] = fn;
-            },
+
+    },
+    actions: {
+        setStrategy: function(name, fn) {
+            this[name] = fn;
         },
-    }
+    },
 })

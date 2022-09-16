@@ -3,7 +3,7 @@ import { InitPeopleOnRandomPosition } from "@/strategies/initPeople/randomLocati
 const config = {
     strategies: {
         filterNeighbours: [FilterAllNeighboursStrategy],
-        pointType: [InitPeopleOnRandomPosition]
+        groundType: [InitPeopleOnRandomPosition]
     }
 }
 
