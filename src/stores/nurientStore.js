@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
+import { reactive } from 'vue'
 
 export const useNurients = defineStore('nurients', {
     state: () => ({
+        nurientsOfGrounds: {},
         Nurients: {
             A: { name: 'A' },
             B: { name: 'B' },
@@ -21,14 +23,21 @@ export const useNurients = defineStore('nurients', {
                 Object.keys(state.Nurients);
             }
         },
-        getInitialNrOfNurientsForTile(state) {
-            return function() {
-                const nurients = [];
-                Object.keys(state.Nurients).forEach(nurientKey => {
-                    nurients[nurientKey] = state.Nurients[nurientKey];
-                    nurients[nurientKey].nr = Math.floor(Math.random() * state.avgNrOfNurientsPerTile * 2);
-                })
-                return nurients;
+        get(state) {
+            return function(groundId) {
+                return reactive(state.nurientsOfGrounds[groundId]);
+            }
+        },
+        init(state) {
+            return function(grounds) {
+                for (let ground of grounds) {
+                    const currentNurient = {};
+                    Object.keys(state.Nurients).forEach(nurientKey => {
+                        currentNurient[nurientKey] = state.Nurients[nurientKey];
+                        currentNurient[nurientKey].nr = Math.floor(Math.random() * state.avgNrOfNurientsPerTile * 2);
+                    })
+                    this.nurientsOfGrounds[ground.id] = currentNurient;
+                }
             }
         }
     },

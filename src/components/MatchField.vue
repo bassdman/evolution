@@ -1,14 +1,7 @@
 <template>
   <div>
     <div class="wrapper" :style="{ '--width':width,width: 25 * width + 'px' }">
-      <div class="groundWrapper" v-for="p in grounds" v-bind:key="p" v-on:groundSelected="ongroundSelected">
-       <div class="ground" v-bind:class="{ ['ground' + p.type]: true, selected: p.isSelected}"
-          v-on:click="toggleSelected" :data-nurient-a="p.nurients.A.nr" :data-nurient-b="p.nurients.B.nr"
-          :data-nurient-c="p.nurients.C.nr" :data-nurient-d="p.nurients.D.nr"
-          :data-nurient-e="p.nurients.E.nr" :data-nurient-f="p.nurients.F.nr"
-          :data-nurient-g="p.nurients.G.nr" :data-nurient-h="p.nurients.H.nr"
-          :data-nurient-i="p.nurients.I.nr"></div>
-      </div>
+        <GroundTile  v-for="p in grounds" v-bind:key="p" :ground="p" :width="width"></GroundTile>
     </div>
   </div>
 </template>
@@ -17,6 +10,7 @@
 import { ref } from "vue";
 import { useGround } from '../stores/groundStore';
 import { useNurients } from '../stores/nurientStore';
+import GroundTile from './GroundTile.vue';
 
 export default {
   name: "evo-sim",
@@ -26,35 +20,31 @@ export default {
     nrGood: Number,
     nrEvil: Number
   },
+  components: {
+  GroundTile
+  },
   setup(props) {
     const groundStore = useGround();
     const nurientStore = useNurients();
 
-  //  const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
-  //  console.log(_neighbours);
+    //  const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
+    //  console.log(_neighbours);
 
     groundStore.initGrounds({
       width: props.width || 20,
       height: props.height || 20
     });
-    groundStore.addAll('nurients',nurientStore.getInitialNrOfNurientsForTile);
+
+    const allGrounds = groundStore.allGrounds();
+    nurientStore.init(allGrounds);
 
     console.log(groundStore.groundAsArray());
     return {
       selected: ref(0),
       grounds: ref(groundStore.groundAsArray()),
       steps: ref(0),
+      nurientStore
     };
-  },
-  methods: {
-    ongroundSelected(value) {
-      this.grounds.forEach((ground) => {
-        if (ground.nr == value.nr) ground.isSelected = value.value;
-        else ground.isSelected = false;
-      });
-
-      this.selected = value.nr;
-    }
   },
 };
 
@@ -86,40 +76,8 @@ export default {
   grid-template-columns: repeat(var(--width), 1fr);
   margin: auto;
 }
-.ground {
-  width: 5px;
-  height: 5px;
-  border-radius: 10px;
-/*  background: gray;*/
-  margin: 10px;
-  cursor: grounder;
-  display: inline-block;
-}
 
-.selected {
-  width: 9px;
-  height: 9px;
-  margin: 8px;
-}
 
-.groundWrapper{
-  background: lightgreen;
-  border: 1px solid lightgray;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
 
-.groundgood{
-  background:green;
-  width: 9px;
-  height: 9px;
-  margin: 8px;
-}
-.groundevil{
-  background:red;
-  width: 9px;
-  height: 9px;
-  margin: 8px;
-}
+
 </style>
