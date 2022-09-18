@@ -10,6 +10,8 @@
 import { ref } from "vue";
 import { useGround } from '../stores/groundStore';
 import { useNurients } from '../stores/nurientStore';
+import { useCreatures } from '../stores/creatureStore';
+
 import GroundTile from './GroundTile.vue';
 
 export default {
@@ -25,7 +27,9 @@ export default {
   },
   setup(props) {
     const groundStore = useGround();
-    const nurientStore = useNurients();
+
+    const usedStores = [useNurients, useCreatures];
+
 
     //  const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
     //  console.log(_neighbours);
@@ -36,14 +40,20 @@ export default {
     });
 
     const allGrounds = groundStore.allGrounds();
-    nurientStore.init(allGrounds);
+  
+    for(let currentStore of usedStores){
+      const store = currentStore();
 
-    console.log(groundStore.groundAsArray());
+      if(store.init)
+        store.init(props,allGrounds);
+
+      if(store.uiElements)
+        groundStore.addUIElements(store.uiElements);
+    }
+
+
     return {
-      selected: ref(0),
       grounds: ref(groundStore.groundAsArray()),
-      steps: ref(0),
-      nurientStore
     };
   },
 };

@@ -29,7 +29,7 @@ export const useNurients = defineStore('nurients', {
             }
         },
         init(state) {
-            return function(grounds) {
+            return function(config, grounds) {
                 for (let ground of grounds) {
                     const currentNurient = {};
                     Object.keys(state.Nurients).forEach(nurientKey => {
