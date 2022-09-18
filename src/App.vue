@@ -1,5 +1,5 @@
 <template>
-  <MatchField :width="40" :height="30" :nrGood="10" :nrEvil="10"/>
+  <MatchField :width="4" :height="3" :nrGood="10" :nrEvil="10"/>
 </template>
 
 <script>

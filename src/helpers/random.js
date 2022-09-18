@@ -13,4 +13,8 @@ function getRandomNumbers(nr = 10, min = 0, max = 100, ignoreList = []) {
     return saved;
 }
 
-export { getRandomNumbers }
+function randomText() {
+    return (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
+}
+
+export { getRandomNumbers, randomText }

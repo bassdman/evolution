@@ -15,54 +15,8 @@
 
 <script>
 import { ref } from "vue";
-import { useStrategies } from '../stores/strategyStore';
+import { useGround } from '../stores/groundStore';
 import { useNurients } from '../stores/nurientStore';
-
-function neighbours(ground, totalWidth, totalHeigth) {
-  const nextX = parseInt(ground) + 1;
-  const previousX = parseInt(ground) - 1;
-  const nextY = parseInt(ground) + totalHeigth;
-  const previousY = parseInt(ground) - totalHeigth;
-
-  const neighbours = [];
-
-  if (nextX % totalWidth !== 1) neighbours.push(nextX);
-
-  if (previousX % totalWidth > 0) neighbours.push(previousX);
-
-  if (parseInt(nextY / totalHeigth) < totalHeigth) neighbours.push(nextY);
-
-  if (previousY > 0 && parseInt(previousY / totalHeigth) >= 0)
-    neighbours.push(previousY);
-
-  return neighbours.toString();
-}
-
-function initgrounds(config) {
-  const nrOfgrounds = (config.width || 10) * (config.height || 10);
-
-  const placePeopleOnMap = config.strategiesStore.get('groundType');
-  const locationOfPeople = placePeopleOnMap.run(config, nrOfgrounds);
-
-  let grounds = [];
-  for (let i = 1; i <= nrOfgrounds; i++) {
-    const type = locationOfPeople[i] || 'default';
-    const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
-    const nurients = config.nurientStore.getInitialNrOfNurientsForTile();
-
-    const ground = {
-      nr: i,
-      isSelected: false,
-      neighbours: _neighbours,
-      type: type,
-      weight: 10,
-      nurients
-    };
-    grounds.push(ground);
-  }
-
-  return grounds;
-}
 
 export default {
   name: "evo-sim",
@@ -73,33 +27,26 @@ export default {
     nrEvil: Number
   },
   setup(props) {
-    const strategiesStore = useStrategies();
+    const groundStore = useGround();
     const nurientStore = useNurients();
 
+  //  const _neighbours = neighbours(i, parseInt(config.width), parseInt(config.height)).split(",");
+  //  console.log(_neighbours);
 
-    const grounds = initgrounds({
+    groundStore.initGrounds({
       width: props.width || 20,
-      height: props.height || 20,
-      nrGood: props.nrGood,
-      nrEvil: props.nrEvil,
-      strategiesStore,
-      nurientStore
+      height: props.height || 20
     });
+    groundStore.addAll('nurients',nurientStore.getInitialNrOfNurientsForTile);
 
+    console.log(groundStore.groundAsArray());
     return {
       selected: ref(0),
-      grounds: ref(grounds),
+      grounds: ref(groundStore.groundAsArray()),
       steps: ref(0),
     };
   },
   methods: {
-    updateStrategies(ctx) {
-      console.log('updatestrategies', ctx)
-      this.strategies = ctx.strategies;
-    },
-    getground(nr) {
-      return this.grounds[nr];
-    },
     ongroundSelected(value) {
       this.grounds.forEach((ground) => {
         if (ground.nr == value.nr) ground.isSelected = value.value;
@@ -110,6 +57,26 @@ export default {
     }
   },
 };
+
+/*function neighbours(ground, totalWidth, totalHeigth) {
+    const nextX = parseInt(ground) + 1;
+    const previousX = parseInt(ground) - 1;
+    const nextY = parseInt(ground) + totalHeigth;
+    const previousY = parseInt(ground) - totalHeigth;
+
+    const neighbours = [];
+
+    if (nextX % totalWidth !== 1) neighbours.push(nextX);
+
+    if (previousX % totalWidth > 0) neighbours.push(previousX);
+
+    if (parseInt(nextY / totalHeigth) < totalHeigth) neighbours.push(nextY);
+
+    if (previousY > 0 && parseInt(previousY / totalHeigth) >= 0)
+        neighbours.push(previousY);
+
+    return neighbours.toString();
+}*/
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

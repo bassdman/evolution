@@ -23,7 +23,7 @@ export const useNurients = defineStore('nurients', {
         },
         getInitialNrOfNurientsForTile(state) {
             return function() {
-                const nurients = {};
+                const nurients = [];
                 Object.keys(state.Nurients).forEach(nurientKey => {
                     nurients[nurientKey] = state.Nurients[nurientKey];
                     nurients[nurientKey].nr = Math.floor(Math.random() * state.avgNrOfNurientsPerTile * 2);
