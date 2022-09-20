@@ -14,7 +14,6 @@ const props = defineProps(['ground'])
 //const nurients = nurientStore.get(props.ground.id);
 
 const circleStyles = computed(() => {
-    console.log(props.ground.ui.circle)
     return { 
         background: props.ground.ui.circle.color 
     }

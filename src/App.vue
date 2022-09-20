@@ -1,16 +1,14 @@
 <template>
+  <HeaderMenu class="header"></HeaderMenu>
   <MatchField :width="40" :height="30" :nrGood="10" :nrEvil="10"/>
 </template>
 
-<script>
+<script setup>
+import HeaderMenu from './components/HeaderMenu.vue';
 import MatchField from './components/MatchField.vue'
 
-export default {
-  name: 'App',
-  components: {
-    MatchField
-  }
-}
+
+
 </script>
 
 <style>
@@ -20,6 +18,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
+
+
 </style>

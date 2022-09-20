@@ -69,7 +69,6 @@ export const useGround = defineStore('grounds', {
                 }
                 if (uiElem.circle) {
                     uiConfig.circle = uiElem.circle;
-                    console.log('circle bei' + uiElem.circle)
                 }
                 this.grounds[uiElem.ground].ui = uiConfig;
             }

@@ -47,7 +47,6 @@ export const useCreatures = defineStore('creatures', {
             }
         },
         uiElements() {
-            console.log('initui', this.creaturesOnGrounds)
             return Object.values(this.creaturesOnGrounds);
         }
     },

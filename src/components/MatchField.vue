@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="wrapper" :style="{ '--width':width,width: 25 * width + 'px' }">
-        <GroundTile  v-for="p in grounds" v-bind:key="p" :ground="p" :width="width"></GroundTile>
+    <div class="wrapper" style="display:none;" :style="{ '--width':width,width: 25 * width + 'px' }">
+        <GroundTile v-for="p in grounds" v-bind:key="p" :ground="p" :width="width"></GroundTile>
     </div>
+    <MatchField3D :width="width" :height="height"></MatchField3D>
   </div>
 </template>
 
@@ -13,6 +14,7 @@ import { useNurients } from '../stores/nurientStore';
 import { useCreatures } from '../stores/creatureStore';
 
 import GroundTile from './GroundTile.vue';
+import MatchField3D from './3dMatchField.vue';
 
 export default {
   name: "evo-sim",
@@ -23,7 +25,8 @@ export default {
     nrEvil: Number
   },
   components: {
-  GroundTile
+  GroundTile,
+  MatchField3D
   },
   setup(props) {
     const groundStore = useGround();
