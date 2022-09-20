@@ -32,6 +32,9 @@ class World {
         const light = createLights();
 
         const group = new Group();
+        group.position.setX(-50);
+        group.position.setY(-30);
+
         for (let x = 0; x < props.width; x++) {
             for (let y = 0; y < props.height; y++) {
                 const cube = createCube(2.3 * x, 2.3 * y);
