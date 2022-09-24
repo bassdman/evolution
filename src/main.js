@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import './libs/events.js';
 import '@/assets/global.css';
 import App from './App.vue';
 

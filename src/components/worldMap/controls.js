@@ -1,6 +1,7 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-function createControls(camera, canvas) {
+function createControls(fields, camera, canvas) {
+    const moveFactor = .09;
     const controls = new OrbitControls(camera, canvas);
 
     controls.enabled = true;
@@ -9,10 +10,10 @@ function createControls(camera, canvas) {
 
 
     controls.minPolarAngle = Math.PI / 2;
-    controls.maxPolarAngle = Math.PI - .3;
+    controls.maxPolarAngle = Math.PI / 2;
 
     controls.minAzimuthAngle = 0; // default
-    controls.maxAzimuthAngle = 0 // default
+    controls.maxAzimuthAngle = 0; // default
 
     controls.keys = {
         LEFT: 'a', //left arrow
@@ -41,6 +42,13 @@ function createControls(camera, canvas) {
         controls.onChangePosition(event.key);
     });
 
+    document.addEventListener("mousedownmove", (event) => {
+        //canvas.style.setProperty('--offsetX', event.detail.moveX + 'px');
+        //canvas.style.setProperty('--offsetY', event.detail.moveY + 'px');
+
+        controls.target.set(controls.target.x - (event.detail.moveX * moveFactor), controls.target.y + (event.detail.moveY * moveFactor));
+        controls.update();
+    });
     /**
      *     const controls = {
         onUpdate: function() {}

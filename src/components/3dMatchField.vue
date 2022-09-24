@@ -44,6 +44,7 @@ export default {
 .canvas {
     width: 100%;
     height: 700px;
+    background: gray;
 }
 </style>
   

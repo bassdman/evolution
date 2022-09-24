@@ -1,6 +1,8 @@
 import { createCamera } from './camera.js';
 import { createCube } from './cube.js';
 import { createScene } from './scene.js';
+//import { backgroundScene } from './background.js';
+
 import { createLights } from './lights.js';
 import { createControls } from './controls.js';
 
@@ -32,8 +34,8 @@ class World {
         const light = createLights();
 
         const group = new Group();
-        group.position.setX(-50);
-        group.position.setY(-30);
+        group.position.setX(-48);
+        group.position.setY(-34);
 
         for (let x = 0; x < props.width; x++) {
             for (let y = 0; y < props.height; y++) {
@@ -46,7 +48,7 @@ class World {
         scene.add(group, light);
 
 
-        controls = createControls(camera, renderer.domElement);
+        controls = createControls(group, camera, renderer.domElement);
 
         const resizer = new Resizer();
         resizer.init(container, camera, renderer);
